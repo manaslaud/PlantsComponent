@@ -11,7 +11,7 @@ class CustomShaderMaterial extends THREE.ShaderMaterial {
       fragmentShader: fragmentShader,
       uniforms: {
         globeTexture:{
-          value: new THREE.TextureLoader().load('8k_earth_daymap.jpg')
+          value: new THREE.TextureLoader().load('8k_earth_nightmap.jpg')
         }
       },
     });
@@ -93,7 +93,7 @@ function App() {
           <sphereGeometry args={[5, 90, 90]} />
           <customShaderMaterial/>
         </mesh>
-        <mesh position={[0, 0, 0]} scale={[1.2,1.2,1.2]}>
+        <mesh position={[0, 0, 0]} scale={[1.05,1.05,1.05]}>
           <sphereGeometry args={[5, 90, 90]} />
           <customShaderMaterial2 />
         </mesh>
