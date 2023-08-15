@@ -3,6 +3,8 @@ import { extend } from '@react-three/fiber';
 import glsl from 'babel-plugin-glsl/macro';
 import * as THREE from 'three';
 
+let textureLoader=new THREE.TextureLoader()
+let text=textureLoader.load('8k_earth_daymap.jpg')
 class CustomShaderMaterial extends THREE.ShaderMaterial {
   constructor() {
     super({
@@ -10,7 +12,7 @@ class CustomShaderMaterial extends THREE.ShaderMaterial {
       fragmentShader: fragmentShader,
       uniforms: {
         globeTexture:{
-          value: new THREE.TextureLoader().load('8k_earth_daymap.jpg')
+          value: text
         }
       },
     });
@@ -77,16 +79,39 @@ extend({ CustomShaderMaterial2 });
 
 
 function Earth() {
- 
+
+  //MUMBAI
+  //cartesian
+  const latitude = 38.9072;
+  const longitude = 77.0369;
+
+  // Convert latitude and longitude to radians
+  const latRad = (latitude * Math.PI) / 180;
+  const lonRad = (longitude * Math.PI) / 180;
+
+  // Sphere radius
+  const radius = 5;
+
+  // Calculate Cartesian coordinates using spherical coordinates
+  const x = radius * Math.cos(latRad) * Math.cos(lonRad);
+  const y = radius * Math.sin(latRad);
+  const z = -radius * Math.cos(latRad) * Math.sin(lonRad); // Negative due to Three.js's coordinate system
+
+
   return (
     <>
       <mesh position={[0, 0, 0]}>
           <sphereGeometry args={[5, 90, 90]} />
           <customShaderMaterial/>
         </mesh>
-        <mesh position={[0, 0, 0]} scale={[1.1,1.1,1.1]}>
+        
+        <mesh position={[0, 0, 0]} scale={[1.2,1.2,1.2]}>
           <sphereGeometry args={[5, 90, 90]} />
           <customShaderMaterial2 />
+        </mesh>
+        <mesh position={[x,y,z]} scale={[1,1,1]}>
+          <sphereGeometry args={[.05, 9, 9]} />
+         <meshBasicMaterial color={0xffffff}/>
         </mesh>
     </>
       
