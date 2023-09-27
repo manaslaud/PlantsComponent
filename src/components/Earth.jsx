@@ -24,10 +24,9 @@ const fragmentShaderTube = `
   uniform float time; // Time variable
 
   void main() {
-    // Use the time uniform for some animation
-    float r = 0.5 + 0.5 * sin(time);
-    float g = 0.1;
-    float b = 0.5 + 0.5 * sin(time + 4.0);
+    float r = 0.7 + 0.5 * sin(time);
+  float g = 0.0;
+  float b = 0.3 + 0.1 * sin(time + 4.0);
     gl_FragColor = vec4(r, g, b, 1.0);
   }
 `;
@@ -116,7 +115,7 @@ function Earth() {
     }
     extend({ CustomShaderMaterialTube });
     return (
-      <mesh scale={[5.1,5.1,5.1]} key={index}>
+      <mesh scale={[5,5,5.2]} key={index}>
       <tubeGeometry args={[curve,20,0.003,8,false]}/>
       <customShaderMaterialTube ref={ref}/>
       </mesh>
@@ -250,7 +249,7 @@ return [x,y,z]
             return(
               <mesh position={[x,y,z]} scale={[1,1,1]} key={index}>
                 <sphereGeometry args={[.06, 9, 9]} />
-                <meshBasicMaterial color={0xffffff}/>
+                <meshBasicMaterial color={0xffaaa5}/>
               </mesh>
             )
           })
