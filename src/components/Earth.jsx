@@ -3,6 +3,7 @@ import { extend } from '@react-three/fiber';
 import glsl from 'babel-plugin-glsl/macro';
 import * as THREE from 'three';
 
+
 let textureLoader=new THREE.TextureLoader()
 let text=textureLoader.load('8k_earth_daymap.jpg')
 class CustomShaderMaterial extends THREE.ShaderMaterial {
@@ -80,24 +81,112 @@ extend({ CustomShaderMaterial2 });
 
 function Earth() {
 
-  //MUMBAI
-  //cartesian
-  const latitude = 19.07;
-  const longitude = 72.8769;
-
+  const cities = [
+    {
+      name: 'Mumbai',
+      latitude: 19.0760,
+      longitude: 72.8777,
+      W: false,
+      S: false,
+    },
+    {
+      name: 'Tokyo',
+      latitude: 35.682839,
+      longitude: 139.759455,
+      W: false,
+      S: false,
+    },
+    {
+      name: 'Sydney',
+      latitude: -33.865143,
+      longitude: 151.209900,
+      W: true,
+      S: true,
+    },
+    {
+      name: 'London',
+      latitude: 51.5074,
+      longitude: -0.1278,
+      W: true,
+      S: false,
+    },
+    {
+      name: 'New York City',
+      latitude: 40.7128,
+      longitude: -74.0060,
+      W: true,
+      S: false,
+    },
+    {
+      name: 'Los Angeles',
+      latitude: 34.0522,
+      longitude: -118.2437,
+      W: true,
+      S: false,
+    },
+    {
+      name: 'Paris',
+      latitude: 48.8566,
+      longitude: 2.3522,
+      W: true,
+      S: false,
+    },
+    {
+      name: 'Beijing',
+      latitude: 39.9042,
+      longitude: 116.4074,
+      W: true,
+      S: false,
+    },
+  ];
+  
+  console.log(cities);
+    
+  const curvesArray=[] 
 //(+ for E AND N - for W AND S)
 
-  // Convert latitude and longitude to radians
-  const latRad = (latitude * Math.PI) / 180;
+ function convertLatLong(latitude,longitude){
+ const latRad = (latitude * Math.PI) / 180;
   const lonRad = (longitude * Math.PI) / 180;
-
+  return [latRad, lonRad]
+ }
   // Sphere radius
   const radius = 5;
-
   // Calculate Cartesian coordinates using spherical coordinates
-  const x = radius * Math.cos(latRad) * Math.cos(lonRad);
-  const y = radius * Math.sin(latRad);
-  const z = -radius * Math.cos(latRad) * Math.sin(lonRad); // Negative due to Three.js's coordinate system
+  function calcPosition(latRad,lonRad){
+    const x = radius * Math.cos(latRad) * Math.cos(lonRad);
+    const y = radius * Math.sin(latRad);
+    const z = -radius * Math.cos(latRad) * Math.sin(lonRad); // Negative due to Three.js's coordinate system
+return [x,y,z]  
+  }
+  function generateTubes(){
+    
+      for(let i=0 ;i<cities.length-1;i++){
+      const startPoint = new THREE.Vector3(cities[i].x, cities[i].y, cities[i].z);
+      const endPoint = new THREE.Vector3(cities[i + 1].x, cities[i + 1].y, cities[i+1].z);
+      let points=[]
+      for(let i=0;i<30;i++){
+        let p=new THREE.Vector3().lerpVectors(startPoint,endPoint,i/30)
+        p.normalize()
+        points.push(p)
+      }
+      const curve = new THREE.CatmullRomCurve3(points);
+      curvesArray.push(curve)
+    }
+    console.log(curvesArray)
+   return(
+    curvesArray.map((curve,index)=>{
+      console.log([curve.points[0].x,curve.points[0].y,curve.points[0].z])
+      return(
+        <mesh scale={[5.1,5.1,5.1]} key={index}>
+          <tubeGeometry args={[curve,20,0.003,8,false]}/>
+          <meshBasicMaterial color={0xffffff}/>
+        </mesh>
+      )
+     })
+   )
+    
+  }
 
 
   return (
@@ -111,10 +200,25 @@ function Earth() {
           <sphereGeometry args={[5, 90, 90]} />
           <customShaderMaterial2 />
         </mesh>
-        <mesh position={[x,y,z]} scale={[1,1,1]}>
-          <sphereGeometry args={[.03, 9, 9]} />
-         <meshBasicMaterial color={0xffffff}/>
-        </mesh>
+        {
+          cities.map((city,index)=>{
+            const [latRad,longRad]= convertLatLong(city.latitude, city.longitude)
+            const [x,y,z]=calcPosition(latRad,longRad)
+           city.x=x
+           city.y=y
+           city.z=z
+            return(
+              <mesh position={[x,y,z]} scale={[1,1,1]} key={index}>
+                <sphereGeometry args={[.06, 9, 9]} />
+                <meshBasicMaterial color={0xffffff}/>
+              </mesh>
+            )
+          })
+        }
+        {
+          generateTubes()
+        
+        }
     </>
       
   );
