@@ -82,8 +82,10 @@ function Earth() {
 
   //MUMBAI
   //cartesian
-  const latitude = 38.9072;
-  const longitude = 77.0369;
+  const latitude = 19.07;
+  const longitude = 72.8769;
+
+//(+ for E AND N - for W AND S)
 
   // Convert latitude and longitude to radians
   const latRad = (latitude * Math.PI) / 180;
@@ -110,7 +112,7 @@ function Earth() {
           <customShaderMaterial2 />
         </mesh>
         <mesh position={[x,y,z]} scale={[1,1,1]}>
-          <sphereGeometry args={[.05, 9, 9]} />
+          <sphereGeometry args={[.03, 9, 9]} />
          <meshBasicMaterial color={0xffffff}/>
         </mesh>
     </>

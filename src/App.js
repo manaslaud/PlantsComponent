@@ -8,13 +8,12 @@ import * as THREE from 'three';
 
 
 function App() {
-  const texture= new THREE.TextureLoader().load('stars.jpg')
   
   return (
-    <div className='w-full h-screen'>
+    <div className='w-[full] h-screen'>
       <Canvas
         dpr={[1, 2]}
-        camera={{ position: [0, 0, 18] }}
+        camera={{ position: [0, 0, 12] }}
         gl={{ antialias: true, pixelRatio: window.devicePixelRatio,alpha:true }}
       >
         <OrbitControls />
