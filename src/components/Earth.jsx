@@ -26,7 +26,7 @@ const fragmentShaderTube = `
   void main() {
     // Use the time uniform for some animation
     float r = 0.5 + 0.5 * sin(time);
-    float g = 0.5 + 0.5 * sin(time + 2.0);
+    float g = 0.1;
     float b = 0.5 + 0.5 * sin(time + 4.0);
     gl_FragColor = vec4(r, g, b, 1.0);
   }
@@ -88,40 +88,40 @@ class CustomShaderMaterial2 extends THREE.ShaderMaterial {
 extend({ CustomShaderMaterial });
 extend({ CustomShaderMaterial2 });
 
-function ReturnCurveMesh(curve,index){
-  const ref=useRef()
- const clock =new THREE.Clock()
- useFrame(()=>{
-  ref.current.uniforms.time.value=clock.getElapsedTime()
- })
-  
-  class CustomShaderMaterialTube extends THREE.ShaderMaterial {
-  
-    constructor() {
-      super({
-        vertexShader: vertexShader,
-        fragmentShader: fragmentShaderTube,
-        uniforms: {
-          time:{
-            value: 0
-          }
-        },
-      });
-    }
-  }
-  extend({ CustomShaderMaterialTube });
-  return (
-    <mesh scale={[5.1,5.1,5.1]} key={index}>
-    <tubeGeometry args={[curve,20,0.003,8,false]}/>
-    <customShaderMaterialTube ref={ref}/>
-    </mesh>
-  )
-}
+
 
 
 function Earth() {
  
- 
+  function ReturnCurveMesh(curve,index){
+    const ref=useRef()
+   const clock =new THREE.Clock()
+   useFrame(()=>{
+    ref.current.uniforms.time.value=clock.getElapsedTime()
+   })
+    
+    class CustomShaderMaterialTube extends THREE.ShaderMaterial {
+    
+      constructor() {
+        super({
+          vertexShader: vertexShader,
+          fragmentShader: fragmentShaderTube,
+          uniforms: {
+            time:{
+              value: 0
+            }
+          },
+        });
+      }
+    }
+    extend({ CustomShaderMaterialTube });
+    return (
+      <mesh scale={[5.1,5.1,5.1]} key={index}>
+      <tubeGeometry args={[curve,20,0.003,8,false]}/>
+      <customShaderMaterialTube ref={ref}/>
+      </mesh>
+    )
+  }
 
   
   
