@@ -1,11 +1,9 @@
-import React from 'react';
-import { extend } from '@react-three/fiber';
+import React, {useRef} from 'react';
+import { extend, useFrame } from '@react-three/fiber';
 import glsl from 'babel-plugin-glsl/macro';
 import * as THREE from 'three';
-
-
 let textureLoader=new THREE.TextureLoader()
-let text=textureLoader.load('8k_earth_daymap.jpg')
+let text=textureLoader.load('8k_earth_nightmap.jpg')
 class CustomShaderMaterial extends THREE.ShaderMaterial {
   constructor() {
     super({
@@ -20,7 +18,19 @@ class CustomShaderMaterial extends THREE.ShaderMaterial {
   }
 }
 
+ 
 
+const fragmentShaderTube = `
+  uniform float time; // Time variable
+
+  void main() {
+    // Use the time uniform for some animation
+    float r = 0.5 + 0.5 * sin(time);
+    float g = 0.5 + 0.5 * sin(time + 2.0);
+    float b = 0.5 + 0.5 * sin(time + 4.0);
+    gl_FragColor = vec4(r, g, b, 1.0);
+  }
+`;
 
 const vertexShader = glsl`
   varying vec2 vUv;
@@ -78,9 +88,44 @@ class CustomShaderMaterial2 extends THREE.ShaderMaterial {
 extend({ CustomShaderMaterial });
 extend({ CustomShaderMaterial2 });
 
+function ReturnCurveMesh(curve,index){
+  const ref=useRef()
+ const clock =new THREE.Clock()
+ useFrame(()=>{
+  ref.current.uniforms.time.value=clock.getElapsedTime()
+ })
+  
+  class CustomShaderMaterialTube extends THREE.ShaderMaterial {
+  
+    constructor() {
+      super({
+        vertexShader: vertexShader,
+        fragmentShader: fragmentShaderTube,
+        uniforms: {
+          time:{
+            value: 0
+          }
+        },
+      });
+    }
+  }
+  extend({ CustomShaderMaterialTube });
+  return (
+    <mesh scale={[5.1,5.1,5.1]} key={index}>
+    <tubeGeometry args={[curve,20,0.003,8,false]}/>
+    <customShaderMaterialTube ref={ref}/>
+    </mesh>
+  )
+}
+
 
 function Earth() {
+ 
+ 
 
+  
+  
+ 
   const cities = [
     {
       name: 'Mumbai',
@@ -140,8 +185,7 @@ function Earth() {
     },
   ];
   
-  console.log(cities);
-    
+
   const curvesArray=[] 
 //(+ for E AND N - for W AND S)
 
@@ -173,16 +217,12 @@ return [x,y,z]
       const curve = new THREE.CatmullRomCurve3(points);
       curvesArray.push(curve)
     }
-    console.log(curvesArray)
    return(
     curvesArray.map((curve,index)=>{
-      console.log([curve.points[0].x,curve.points[0].y,curve.points[0].z])
       return(
-        <mesh scale={[5.1,5.1,5.1]} key={index}>
-          <tubeGeometry args={[curve,20,0.003,8,false]}/>
-          <meshBasicMaterial color={0xffffff}/>
-        </mesh>
+        ReturnCurveMesh(curve,index)
       )
+      
      })
    )
     
